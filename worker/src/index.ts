@@ -33,7 +33,7 @@ const RATE_WINDOW_SECONDS = 60 * 60;
 const worker = {
   async fetch(request: Request, env: Env): Promise<Response> {
     const origin = request.headers.get("origin");
-    const cors = corsHeaders(origin, env.ALLOWED_ORIGIN);
+    const cors = corsHeaders(origin, request.url, env.ALLOWED_ORIGIN);
 
     if (request.method === "OPTIONS") {
       return new Response(null, { status: cors ? 204 : 403, headers: cors });
@@ -73,7 +73,7 @@ export default worker;
 
 async function createPaste(request: Request, env: Env, cors: Headers): Promise<Response> {
   const origin = request.headers.get("origin");
-  if (origin && origin !== env.ALLOWED_ORIGIN && origin !== "http://localhost:3000") {
+  if (!isAllowedOrigin(origin, request.url, env.ALLOWED_ORIGIN)) {
     return json({ error: "Origin not allowed" }, 403, cors);
   }
   if (!request.headers.get("content-type")?.startsWith("application/json")) {
@@ -226,7 +226,13 @@ function validateDrawing(input: unknown): Drawing | null {
   return candidate as Drawing;
 }
 
-function corsHeaders(origin: string | null, allowedOrigin: string): Headers {
+function isAllowedOrigin(origin: string | null, requestUrl: string, allowedOrigin: string): boolean {
+  if (!origin) return true;
+  const requestOrigin = new URL(requestUrl).origin;
+  return origin === requestOrigin || origin === allowedOrigin || origin === "http://localhost:3000";
+}
+
+function corsHeaders(origin: string | null, requestUrl: string, allowedOrigin: string): Headers {
   const headers = new Headers({
     "access-control-allow-headers": "authorization, content-type",
     "access-control-allow-methods": "GET, POST, DELETE, OPTIONS",
@@ -234,8 +240,7 @@ function corsHeaders(origin: string | null, allowedOrigin: string): Headers {
     "content-security-policy": "default-src 'none'",
     "x-content-type-options": "nosniff",
   });
-  const allowed = new Set([allowedOrigin, "http://localhost:3000"]);
-  if (origin && allowed.has(origin)) {
+  if (origin && isAllowedOrigin(origin, requestUrl, allowedOrigin)) {
     headers.set("access-control-allow-origin", origin);
     headers.set("vary", "Origin");
   }
