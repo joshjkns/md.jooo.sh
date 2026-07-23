@@ -20,6 +20,7 @@ import { createPaste } from "@/lib/api";
 import { insertMarkdown } from "@/lib/markdown";
 import type { Drawing } from "@/lib/types";
 import { DrawingPad } from "./drawing-pad";
+import { HighlightedCode } from "./highlighted-code";
 import { MarkdownContent } from "./markdown-content";
 
 const emptyDrawing: Drawing = { width: 1200, height: 720, strokes: [] };
@@ -184,9 +185,7 @@ export function Editor() {
           {language === "markdown" ? (
             <MarkdownContent content={content} />
           ) : content ? (
-            <pre className="overflow-x-auto whitespace-pre-wrap break-words font-mono text-[0.86rem] leading-7 text-ink">
-              {content}
-            </pre>
+            <HighlightedCode code={content} language={language} />
           ) : (
             <p className="font-mono text-[0.8rem] text-dim">Preview appears here.</p>
           )}

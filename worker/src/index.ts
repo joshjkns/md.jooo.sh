@@ -27,6 +27,8 @@ const MAX_TITLE_CHARS = 120;
 const MAX_CONTENT_BYTES = 100_000;
 const MAX_STROKES = 2_000;
 const MAX_POINTS = 40_000;
+const MAX_DRAWING_WIDTH = 12_000;
+const MAX_DRAWING_HEIGHT = 7_200;
 const RATE_LIMIT = 20;
 const RATE_WINDOW_SECONDS = 60 * 60;
 
@@ -201,7 +203,15 @@ async function allowRequest(ipHash: string, db: D1Database): Promise<boolean> {
 function validateDrawing(input: unknown): Drawing | null {
   if (!input || typeof input !== "object") return null;
   const candidate = input as Partial<Drawing>;
-  if (candidate.width !== 1200 || candidate.height !== 720 || !Array.isArray(candidate.strokes)) return null;
+  if (
+    !Number.isFinite(candidate.width) ||
+    !Number.isFinite(candidate.height) ||
+    candidate.width! < 1200 ||
+    candidate.width! > MAX_DRAWING_WIDTH ||
+    candidate.height! < 720 ||
+    candidate.height! > MAX_DRAWING_HEIGHT ||
+    !Array.isArray(candidate.strokes)
+  ) return null;
   if (candidate.strokes.length > MAX_STROKES) return null;
   let pointCount = 0;
   for (const stroke of candidate.strokes) {
@@ -215,9 +225,9 @@ function validateDrawing(input: unknown): Drawing | null {
         !Number.isFinite(point.y) ||
         !Number.isFinite(point.pressure) ||
         point.x < 0 ||
-        point.x > 1200 ||
+        point.x > candidate.width! ||
         point.y < 0 ||
-        point.y > 720 ||
+        point.y > candidate.height! ||
         point.pressure < 0 ||
         point.pressure > 1
       ) return null;

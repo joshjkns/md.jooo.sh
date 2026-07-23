@@ -4,6 +4,9 @@ export default {
   content: ["./src/**/*.{js,ts,jsx,tsx,mdx}"],
   theme: {
     extend: {
+      animation: {
+        "fade-in": "fade-in 420ms ease-out both",
+      },
       colors: {
         paper: "var(--paper)",
         ink: "var(--ink)",
@@ -14,6 +17,16 @@ export default {
       fontFamily: {
         sans: ["var(--font-sans)"],
         mono: ["var(--font-mono)"],
+      },
+      keyframes: {
+        "fade-in": {
+          from: {
+            opacity: "0",
+          },
+          to: {
+            opacity: "1",
+          },
+        },
       },
     },
   },

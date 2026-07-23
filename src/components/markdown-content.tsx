@@ -1,4 +1,5 @@
 import ReactMarkdown from "react-markdown";
+import rehypeHighlight from "rehype-highlight";
 import remarkGfm from "remark-gfm";
 
 export function MarkdownContent({ content }: { content: string }) {
@@ -16,6 +17,7 @@ export function MarkdownContent({ content }: { content: string }) {
             </a>
           ),
         }}
+        rehypePlugins={[[rehypeHighlight, { detect: true, subset: false }]]}
         remarkPlugins={[remarkGfm]}
       >
         {content}

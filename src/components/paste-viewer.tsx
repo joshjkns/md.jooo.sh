@@ -5,6 +5,7 @@ import { Check, Copy, Download, LoaderCircle, Trash2 } from "lucide-react";
 import { deletePaste, getPaste } from "@/lib/api";
 import type { Paste } from "@/lib/types";
 import { DrawingPad } from "./drawing-pad";
+import { HighlightedCode } from "./highlighted-code";
 import { MarkdownContent } from "./markdown-content";
 
 export function PasteViewer({ id }: { id: string }) {
@@ -136,9 +137,7 @@ export function PasteViewer({ id }: { id: string }) {
           {paste.language === "markdown" && view === "rendered" ? (
             <MarkdownContent content={paste.content} />
           ) : (
-            <pre className="overflow-x-auto whitespace-pre-wrap break-words font-mono text-[0.88rem] leading-7 text-ink">
-              {paste.content}
-            </pre>
+            <HighlightedCode code={paste.content} language={paste.language} />
           )}
         </div>
       )}
