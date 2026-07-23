@@ -1,0 +1,9 @@
+.next
+out
+node_modules
+.wrangler
+.cloudflare
+.cfrc
+.dev.vars
+*.tsbuildinfo
+.DS_Store

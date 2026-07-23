@@ -1,0 +1,79 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --paper: #050505;
+  --panel: rgba(255, 255, 255, 0.025);
+  --panel-hover: rgba(255, 255, 255, 0.05);
+  --ink: #f4f4f4;
+  --muted: #929292;
+  --dim: #5f5f5f;
+  --rule: rgba(255, 255, 255, 0.09);
+  --font-sans: "Helvetica Neue", Helvetica, sans-serif;
+  --font-mono: "IBM Plex Mono", "SFMono-Regular", Consolas, monospace;
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  min-width: 320px;
+  min-height: 100%;
+  background: var(--paper);
+  color: var(--ink);
+}
+
+body {
+  margin: 0;
+}
+
+button,
+input,
+textarea,
+select {
+  color: inherit;
+  font: inherit;
+}
+
+button,
+select {
+  border: 0;
+}
+
+button {
+  cursor: pointer;
+}
+
+::selection {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.focus-ring:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.34);
+  outline-offset: 2px;
+}
+
+.editor-textarea {
+  field-sizing: content;
+  min-height: 25rem;
+  resize: none;
+}
+
+.drawing-canvas {
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition: none !important;
+  }
+}
