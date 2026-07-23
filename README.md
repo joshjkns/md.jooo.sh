@@ -6,7 +6,7 @@ sketches. Text and drawing can be saved together in one paste.
 ## Architecture
 
 `md.jooo.sh` is a statically exported Next.js frontend on GitHub Pages. It calls
-the Worker at `api.md.jooo.sh`, which validates and stores pastes in Cloudflare
+the Worker at `md.jooo.sh/api` (also available at `api.md.jooo.sh`), which validates and stores pastes in Cloudflare
 D1. Delete tokens are returned once and kept in the creator's browser.
 
 ## Local development
@@ -34,7 +34,7 @@ cf deploy --prebuilt
 
 Set the returned database ID in `wrangler.jsonc` and configure
 `PASTE_IP_HASH_SALT` as a Worker secret. The custom-domain route in the config
-attaches the Worker to `api.md.jooo.sh`.
+attaches the Worker to both `md.jooo.sh/api/*` and `api.md.jooo.sh`.
 
 `cloudflare.config.ts` is the source used by the current `cf` CLI. The
 `wrangler.jsonc` file is kept as a portable equivalent for editor tooling and

@@ -40,11 +40,12 @@ const worker = {
     }
 
     const url = new URL(request.url);
-    if (url.pathname === "/health" && request.method === "GET") {
+    const pathname = url.pathname.replace(/^\/api(?=\/|$)/, "");
+    if (pathname === "/health" && request.method === "GET") {
       return json({ ok: true }, 200, cors);
     }
 
-    const match = url.pathname.match(/^\/pastes(?:\/([^/]+))?$/);
+    const match = pathname.match(/^\/pastes(?:\/([^/]+))?$/);
     if (!match) return json({ error: "Not found" }, 404, cors);
 
     try {

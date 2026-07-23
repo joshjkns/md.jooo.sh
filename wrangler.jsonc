@@ -8,6 +8,10 @@
     {
       "pattern": "api.md.jooo.sh",
       "custom_domain": true
+    },
+    {
+      "pattern": "md.jooo.sh/api/*",
+      "zone_name": "jooo.sh"
     }
   ],
   "vars": {

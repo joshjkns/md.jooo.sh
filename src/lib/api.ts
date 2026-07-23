@@ -1,7 +1,7 @@
 import type { CreatePasteResponse, Drawing, Paste } from "./types";
 
 export const API_URL =
-  process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "") ?? "https://api.md.jooo.sh";
+  process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "") ?? "/api";
 
 export async function createPaste(input: {
   title: string;
