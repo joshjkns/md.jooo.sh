@@ -58,8 +58,7 @@ button {
 }
 
 .editor-textarea {
-  field-sizing: content;
-  min-height: 25rem;
+  min-height: 20rem;
   resize: none;
 }
 
@@ -69,11 +68,146 @@ button {
   user-select: none;
 }
 
+.markdown {
+  color: var(--ink);
+  font-size: 0.95rem;
+  line-height: 1.75;
+  overflow-wrap: anywhere;
+}
+
+.markdown > :first-child {
+  margin-top: 0;
+}
+
+.markdown > :last-child {
+  margin-bottom: 0;
+}
+
+.markdown h1,
+.markdown h2,
+.markdown h3 {
+  margin: 1.7em 0 0.65em;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  line-height: 1.25;
+}
+
+.markdown h1 {
+  font-size: 1.65rem;
+}
+
+.markdown h2 {
+  border-bottom: 1px solid var(--rule);
+  padding-bottom: 0.4em;
+  font-size: 1.3rem;
+}
+
+.markdown h3 {
+  font-size: 1.05rem;
+}
+
+.markdown p,
+.markdown ul,
+.markdown ol,
+.markdown blockquote,
+.markdown pre,
+.markdown table {
+  margin: 0 0 1.15em;
+}
+
+.markdown ul,
+.markdown ol {
+  padding-left: 1.5rem;
+}
+
+.markdown ul {
+  list-style: disc;
+}
+
+.markdown ol {
+  list-style: decimal;
+}
+
+.markdown li + li {
+  margin-top: 0.3em;
+}
+
+.markdown a {
+  color: var(--ink);
+  text-decoration: underline;
+  text-decoration-color: rgba(255, 255, 255, 0.35);
+  text-underline-offset: 0.2em;
+}
+
+.markdown blockquote {
+  border-left: 2px solid rgba(255, 255, 255, 0.2);
+  padding-left: 1rem;
+  color: var(--muted);
+}
+
+.markdown code {
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.04);
+  padding: 0.1em 0.32em;
+  font-family: var(--font-mono);
+  font-size: 0.86em;
+}
+
+.markdown pre {
+  overflow-x: auto;
+  border: 1px solid var(--rule);
+  background: #080808;
+  padding: 1rem;
+}
+
+.markdown pre code {
+  border: 0;
+  background: transparent;
+  padding: 0;
+  font-size: 0.82rem;
+  line-height: 1.65;
+}
+
+.markdown hr {
+  margin: 2rem 0;
+  border: 0;
+  border-top: 1px solid var(--rule);
+}
+
+.markdown table {
+  display: block;
+  width: 100%;
+  overflow-x: auto;
+  border-collapse: collapse;
+}
+
+.markdown th,
+.markdown td {
+  border: 1px solid var(--rule);
+  padding: 0.5rem 0.7rem;
+  text-align: left;
+}
+
+.markdown th {
+  font-weight: 600;
+}
+
+.markdown input[type="checkbox"] {
+  margin-right: 0.5rem;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
   *::after {
     scroll-behavior: auto !important;
     transition: none !important;
+  }
+}
+
+@media (min-width: 768px) {
+  .editor-textarea {
+    min-height: 30rem;
   }
 }

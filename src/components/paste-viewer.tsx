@@ -1,16 +1,18 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Check, Copy, LoaderCircle, Trash2 } from "lucide-react";
+import { Check, Copy, Download, LoaderCircle, Trash2 } from "lucide-react";
 import { deletePaste, getPaste } from "@/lib/api";
 import type { Paste } from "@/lib/types";
 import { DrawingPad } from "./drawing-pad";
+import { MarkdownContent } from "./markdown-content";
 
 export function PasteViewer({ id }: { id: string }) {
   const [paste, setPaste] = useState<Paste | null>(null);
   const [error, setError] = useState("");
   const [copied, setCopied] = useState(false);
   const [deleteToken, setDeleteToken] = useState("");
+  const [view, setView] = useState<"rendered" | "source">("rendered");
 
   useEffect(() => {
     setDeleteToken(localStorage.getItem(`md-delete-${id}`) ?? "");
@@ -22,6 +24,21 @@ export function PasteViewer({ id }: { id: string }) {
     await navigator.clipboard.writeText(paste.content);
     setCopied(true);
     window.setTimeout(() => setCopied(false), 1500);
+  }
+
+  function download() {
+    if (!paste) return;
+    const extension = paste.language === "markdown" ? "md" : "txt";
+    const filename = (paste.title || paste.id)
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-|-$/g, "");
+    const url = URL.createObjectURL(new Blob([paste.content], { type: "text/plain;charset=utf-8" }));
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = `${filename || paste.id}.${extension}`;
+    anchor.click();
+    URL.revokeObjectURL(url);
   }
 
   async function remove() {
@@ -48,21 +65,59 @@ export function PasteViewer({ id }: { id: string }) {
 
   return (
     <article className="py-8 sm:py-10">
+      {paste.title && (
+        <h1 className="mb-6 text-[clamp(1.55rem,4vw,2.35rem)] font-semibold leading-tight tracking-[-0.035em]">
+          {paste.title}
+        </h1>
+      )}
       <div className="flex flex-wrap items-center gap-3 border-b border-rule pb-4">
-        <span className="font-mono text-[0.72rem] text-muted">{paste.language}</span>
+        {paste.language === "markdown" ? (
+          <div className="flex items-center gap-4">
+            {(["rendered", "source"] as const).map((item) => (
+              <button
+                className={`focus-ring rounded pb-0.5 font-mono text-[0.72rem] transition-colors ${
+                  view === item ? "border-b border-ink text-ink" : "text-dim hover:text-muted"
+                }`}
+                key={item}
+                onClick={() => setView(item)}
+                type="button"
+              >
+                {item}
+              </button>
+            ))}
+          </div>
+        ) : (
+          <span className="font-mono text-[0.72rem] text-muted">{paste.language}</span>
+        )}
         <span className="font-mono text-[0.68rem] text-dim">
           {new Date(paste.created_at).toLocaleString()}
         </span>
+        {paste.expires_at && (
+          <span className="font-mono text-[0.68rem] text-dim">
+            expires {new Date(paste.expires_at).toLocaleDateString()}
+          </span>
+        )}
         <div className="ml-auto flex items-center gap-1">
           {!!paste.content && (
-            <button
-              className="focus-ring flex items-center gap-2 rounded p-2 font-mono text-[0.7rem] text-muted transition-colors hover:text-ink"
-              onClick={copy}
-              type="button"
-            >
-              {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
-              {copied ? "copied" : "copy"}
-            </button>
+            <>
+              <button
+                className="focus-ring flex items-center gap-2 rounded p-2 font-mono text-[0.7rem] text-muted transition-colors hover:text-ink"
+                onClick={copy}
+                type="button"
+              >
+                {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
+                {copied ? "copied" : "copy"}
+              </button>
+              <button
+                aria-label="Download source"
+                className="focus-ring rounded p-2 text-dim transition-colors hover:text-ink"
+                onClick={download}
+                title="Download source"
+                type="button"
+              >
+                <Download className="h-3.5 w-3.5" />
+              </button>
+            </>
           )}
           {deleteToken && (
             <button
@@ -77,14 +132,20 @@ export function PasteViewer({ id }: { id: string }) {
         </div>
       </div>
       {!!paste.content && (
-        <pre className="overflow-x-auto whitespace-pre-wrap break-words py-7 font-mono text-[0.88rem] leading-7 text-ink">
-          {paste.content}
-        </pre>
+        <div className="py-7">
+          {paste.language === "markdown" && view === "rendered" ? (
+            <MarkdownContent content={paste.content} />
+          ) : (
+            <pre className="overflow-x-auto whitespace-pre-wrap break-words font-mono text-[0.88rem] leading-7 text-ink">
+              {paste.content}
+            </pre>
+          )}
+        </div>
       )}
       {paste.drawing && (
-        <div className={paste.content ? "border-t border-rule pt-7" : "pt-7"}>
+        <section className={paste.content ? "border-t border-rule pt-7" : "pt-7"} aria-label="Drawing">
           <DrawingPad drawing={paste.drawing} onChange={() => undefined} readOnly />
-        </div>
+        </section>
       )}
     </article>
   );

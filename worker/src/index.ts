@@ -23,6 +23,7 @@ const EXPIRIES: Record<string, number | null> = {
   never: null,
 };
 const ID_PATTERN = /^[a-zA-Z0-9_-]{6,16}$/;
+const MAX_TITLE_CHARS = 120;
 const MAX_CONTENT_BYTES = 100_000;
 const MAX_STROKES = 2_000;
 const MAX_POINTS = 40_000;
@@ -88,12 +89,14 @@ async function createPaste(request: Request, env: Env, cors: Headers): Promise<R
 
   const body = (await request.json()) as Record<string, unknown>;
   if (body.website) return json({ error: "Invalid request" }, 400, cors);
+  const title = typeof body.title === "string" ? body.title.trim() : "";
   const content = typeof body.content === "string" ? body.content : "";
   const language = typeof body.language === "string" ? body.language : "text";
   const expiresIn = typeof body.expiresIn === "string" ? body.expiresIn : "7d";
   const drawing = body.drawing === null || body.drawing === undefined ? null : validateDrawing(body.drawing);
 
   if (!drawing && body.drawing) return json({ error: "Invalid drawing" }, 400, cors);
+  if (title.length > MAX_TITLE_CHARS) return json({ error: "Title is too long" }, 400, cors);
   if (!content.trim() && !drawing?.strokes.length) return json({ error: "Paste is empty" }, 400, cors);
   if (new TextEncoder().encode(content).byteLength > MAX_CONTENT_BYTES) {
     return json({ error: "Text is too large" }, 413, cors);
@@ -110,15 +113,25 @@ async function createPaste(request: Request, env: Env, cors: Headers): Promise<R
 
   await env.DB.prepare(
     `INSERT INTO pastes
-      (id, content, language, drawing, created_at, expires_at, delete_token_hash)
-     VALUES (?, ?, ?, ?, ?, ?, ?)`,
+      (id, title, content, language, drawing, created_at, expires_at, delete_token_hash)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
   )
-    .bind(id, content, language, drawing ? JSON.stringify(drawing) : null, now.toISOString(), expiresAt, deleteTokenHash)
+    .bind(
+      id,
+      title,
+      content,
+      language,
+      drawing ? JSON.stringify(drawing) : null,
+      now.toISOString(),
+      expiresAt,
+      deleteTokenHash,
+    )
     .run();
 
   return json(
     {
       id,
+      title,
       content,
       language,
       drawing,
@@ -134,7 +147,7 @@ async function createPaste(request: Request, env: Env, cors: Headers): Promise<R
 async function getPaste(id: string, env: Env, cors: Headers): Promise<Response> {
   if (!ID_PATTERN.test(id)) return json({ error: "Paste not found" }, 404, cors);
   const row = await env.DB.prepare(
-    `SELECT id, content, language, drawing, created_at, expires_at
+    `SELECT id, title, content, language, drawing, created_at, expires_at
      FROM pastes
      WHERE id = ? AND (expires_at IS NULL OR expires_at > ?)`,
   )

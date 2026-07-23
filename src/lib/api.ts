@@ -4,6 +4,7 @@ export const API_URL =
   process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "") ?? "https://api.md.jooo.sh";
 
 export async function createPaste(input: {
+  title: string;
   content: string;
   language: string;
   drawing: Drawing | null;

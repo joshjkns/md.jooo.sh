@@ -1,6 +1,7 @@
 # md.jooo.sh
 
-A minimal pastebin for text, code, and pressure-aware pencil sketches.
+A minimal pastebin for live-previewed Markdown, code, and pressure-aware pencil
+sketches. Text and drawing can be saved together in one paste.
 
 ## Architecture
 
@@ -42,6 +43,7 @@ resource metadata.
 ## Limits
 
 - 100 KB of text per paste
+- Optional titles up to 120 characters
 - 40,000 drawing points and 2,000 strokes
 - 20 paste creations per IP hash per hour
 - Expiry options from one hour to permanent
